@@ -1,0 +1,134 @@
+/* =========================================
+   GLOBAL STYLE (Dipakai di semua halaman)
+   ========================================= */
+:root {
+    /* Palet Warna */
+    --merah-utama: #D32F2F;
+    --merah-hover: #B71C1C;
+    --putih: #FFFFFF;
+    --abu-bg: #F8F9FA;      /* Abu-abu sangat muda untuk background layar */
+    --abu-teks: #4A4A4A;    /* Abu-abu gelap agar teks nyaman dibaca */
+    --abu-border: #E0E0E0;
+    
+    /* Ukuran Radius (Biar Soft & Rounded) */
+    --rounded-sm: 8px;
+    --rounded-md: 16px;
+    --rounded-lg: 24px;
+    
+    /* Efek Bayangan Lembut */
+    --shadow-soft: 0 8px 24px rgba(0, 0, 0, 0.05);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif, 'Plus Jakarta Sans';
+}
+
+body {
+    /* Background modern dengan efek 'Ambient Glow' yang soft */
+    background-color: var(--abu-bg);
+    background-image: 
+        radial-gradient(circle at top right, #ffe1e1, transparent 50%),
+        radial-gradient(circle at bottom left, #e0e5ec, transparent 50%);
+    color: var(--abu-teks);
+    
+    /* Flexbox untuk bikin posisinya bener-bener di tengah (Tengah Kanan-Kiri, Tengah Atas-Bawah) */
+    display: flex;
+    justify-content: center; 
+    align-items: center; /* INI KUNCI BIAR KE TENGAH VERTIKAL */
+    min-height: 100vh;
+    padding: 20px; /* Biar kalau dibuka di HP beneran, card-nya ga nabrak ujung layar */
+}
+/* Container Utama dijadiin Card utuh yang rounded */
+.mobile-container {
+    width: 100%;
+    max-width: 420px;
+    background-color: var(--putih, #FFFFFF); /* Pake putih biar kontras sama gradien body lu */
+    border-radius: 24px; /* Ini yang bikin semua ujungnya melengkung mulus */
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08); /* Bayangan halus biar melayang */
+    position: relative;
+    padding: 40px 20px;
+    overflow: hidden;
+}
+
+/* =========================================
+   STYLE KHUSUS LOGIN & FORM
+   ========================================= */
+.login-header {
+    text-align: left;
+    padding: 0 10px 25px 10px; /* Padding atasnya gw kurangin biar proporsional */
+}
+
+/* ... (Bagian .login-header h1 dan p biarin aja kayak sebelumnya) ... */
+
+/* Form Card sekarang nyatu (transparan) sama container utama */
+.login-form-card {
+    background-color: transparent; /* Ubah jadi transparan */
+    border-radius: 0; /* Lengkungannya dihapus karena udah di-cover container utama */
+    padding: 0 10px;
+    box-shadow: none; /* Shadow dihapus biar ga dobel */
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.input-group label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #3F3F46;
+    margin-left: 2px;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 16px;
+    border: 1px solid var(--abu-border);
+    background-color: #FAFAFA;
+    border-radius: var(--rounded-md, 12px);
+    font-size: 15px;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+.input-group input:focus {
+    border-color: var(--merah-utama);
+    background-color: var(--putih);
+    box-shadow: 0 0 0 4px rgba(211, 47, 47, 0.08);
+}
+
+.btn-login {
+    margin-top: 5px;
+    width: 100%;
+    padding: 16px;
+    background-color: var(--merah-utama);
+    color: var(--putih);
+    border: none;
+    border-radius: var(--rounded-md, 12px);
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.btn-login:hover {
+    background-color: var(--merah-hover);
+    transform: translateY(-2px);
+}
+
+.alert-error {
+    background-color: #FEF2F2;
+    color: #DC2626;
+    padding: 12px 16px;
+    border-radius: var(--rounded-sm, 10px);
+    font-size: 13px;
+    font-weight: 600;
+    border: 1px solid #FEE2E2;
+}
