@@ -203,7 +203,7 @@ if ($_SESSION['status_login'] != "sudah_login") {
             </div>
             <div class="user-info">
                 <h3><?php echo $_SESSION['nama']; ?></h3>
-                <p>Siswa SMK Telkom • NIS <?php echo $_SESSION['nis']; ?></p>
+                <p>Siswa X PPLG 3 • NIS <?php echo $_SESSION['nis']; ?></p>
             </div>
         </div>
 
