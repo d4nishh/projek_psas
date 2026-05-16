@@ -1,11 +1,35 @@
-<?php 
+<?php
 session_start();
+include 'config/koneksi.php';
 
-// Satpam Penjaga Halaman
-if ($_SESSION['status_login'] != "sudah_login") {
-    header("location: login.php?pesan=belum_login");
+// Satpam Login
+if (!isset($_SESSION['status_login']) || $_SESSION['status_login'] != "sudah_login") {
+    header("location: login.php");
     exit();
 }
+
+$role = $_SESSION['role'];
+
+// Tarik data berdasarkan siapa yang login
+if ($role == 'siswa') {
+    $nis = $_SESSION['nis'];
+    $query = mysqli_query($koneksi, "SELECT * FROM siswa WHERE nis='$nis'");
+    $data = mysqli_fetch_array($query);
+    
+    $nama_user = $data['nama'];
+    $sub_info = "Siswa " . $data['kelas'] . " • NIS: " . $data['nis'];
+} else {
+    $nis_guru = $_SESSION['nis_guru'];
+    $query = mysqli_query($koneksi, "SELECT * FROM admin WHERE nis_guru='$nis_guru'");
+    $data = mysqli_fetch_array($query);
+    
+    $nama_user = $data['nama'];
+    // Ambil kolom jabatan yang baru lu bikin di phpMyAdmin
+    $sub_info = $data['jabatan'] . " • NIS Guru: " . $data['nis_guru']; 
+}
+
+// Ambil huruf pertama buat avatar bulat
+$inisial = strtoupper(substr($nama_user, 0, 1));
 ?>
 
 <!DOCTYPE html>
@@ -41,36 +65,51 @@ if ($_SESSION['status_login'] != "sudah_login") {
         }
 
         /* --- IDENTITY CARD --- */
-        .profile-header-card {
-            background-color: #1F2937; /* Dark theme untuk kartu identitas agar kontras */
-            padding: 24px;
+       /* --- KOTAK PROFIL BIRU (DARK NAVY) --- */
+        .profile-card {
+            background-color: #1F2937; /* Warna Dark Navy */
             border-radius: 24px;
+            padding: 24px;
             display: flex;
             align-items: center;
             gap: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            margin-bottom: 30px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.0.2);
+            text-align: left; /* Biar teksnya rata kiri lagi */
         }
+        
         .avatar-circle {
             width: 60px;
             height: 60px;
-            background-color: #D32F2F;
-            color: white;
+            background-color: #D32F2F; /* Merah Aksen */
+            color: #FFFFFF;
             border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 24px;
+            font-size: 28px;
             font-weight: 700;
-            border: 3px solid rgba(255, 255, 255, 0.1);
+            flex-shrink: 0; /* Biar lingkarannya ga gepeng */
         }
-        .user-info h3 {
-            color: white;
-            font-size: 18px;
-            margin-bottom: 4px;
+        
+        .profile-details {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
         }
-        .user-info p {
-            color: #9CA3AF;
-            font-size: 13px;
+        
+        .profile-details h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #FFFFFF; /* Teks nama jadi putih */
+            margin: 0;
+        }
+        
+        .profile-details p {
+            font-size: 16px;
+            color: #9CA3AF; /* Teks subtitle abu-abu terang */
+            margin: 0;
+            line-height: 1.4;
         }
 
         /* --- MENU STYLING --- */
@@ -87,7 +126,7 @@ if ($_SESSION['status_login'] != "sudah_login") {
             background-color: #FFFFFF;
             border-radius: 20px;
             padding: 8px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
             border: 1px solid rgba(255, 255, 255, 0.8);
         }
         .menu-item {
@@ -197,13 +236,12 @@ if ($_SESSION['status_login'] != "sudah_login") {
         
         <h2 style="text-align: center; font-size: 18px; color: #1F2937; margin-bottom: 10px;">Profil Saya</h2>
 
-        <div class="profile-header-card">
-            <div class="avatar-circle">
-                <?php echo strtoupper(substr($_SESSION['nama'], 0, 1)); ?>
+        <div class="profile-card"> <div class="avatar-circle">
+                <?php echo $inisial; ?>
             </div>
-            <div class="user-info">
-                <h3><?php echo $_SESSION['nama']; ?></h3>
-                <p>Siswa X PPLG 3 • NIS <?php echo $_SESSION['nis']; ?></p>
+            <div class="profile-details">
+                <h2><?php echo $nama_user; ?></h2>
+                <p><?php echo $sub_info; ?></p>
             </div>
         </div>
 
@@ -252,7 +290,7 @@ if ($_SESSION['status_login'] != "sudah_login") {
             <div class="nav-icon">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
             </div>
-            <span class="nav-text">Riwayat</span>
+       <span class="nav-text"><?php echo ($role == 'siswa') ? 'Riwayat' : 'Kelola'; ?></span>
         </a>
         <a href="profil.php" class="nav-item active-profile">
             <div class="nav-icon">
