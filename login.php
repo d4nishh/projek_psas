@@ -1,11 +1,43 @@
 <?php
-// Mulai session untuk ngecek apakah user udah login atau belum
 session_start();
+include 'config/koneksi.php';
 
-// Kalau udah login, nggak usah ke halaman login lagi, langsung tendang ke Home
+// Satpam Pengecek Gelang Tiket
 if (isset($_SESSION['status_login']) && $_SESSION['status_login'] == "sudah_login") {
     header("location: homepage.php");
     exit();
+}
+
+if (isset($_POST['login'])) {
+    $role = $_POST['role']; // Nangkep role dari hidden input
+    $identifier = mysqli_real_escape_string($koneksi, $_POST['identifier']);
+    $password = $_POST['password'];
+
+    if ($role == 'siswa') {
+        $query = mysqli_query($koneksi, "SELECT * FROM siswa WHERE nis='$identifier' AND password='$password'");
+        if (mysqli_num_rows($query) > 0) {
+            $data = mysqli_fetch_array($query);
+            $_SESSION['status_login'] = "sudah_login";
+            $_SESSION['role'] = "siswa";
+            $_SESSION['nis'] = $data['nis'];
+            $_SESSION['nama'] = $data['nama'];
+            header("location: homepage.php");
+        } else {
+            header("location: login.php?pesan=gagal");
+        }
+    } else if ($role == 'guru') {
+        $query = mysqli_query($koneksi, "SELECT * FROM admin WHERE nis_guru='$identifier' AND password='$password'");
+        if (mysqli_num_rows($query) > 0) {
+            $data = mysqli_fetch_array($query);
+            $_SESSION['status_login'] = "sudah_login";
+            $_SESSION['role'] = "guru";
+            $_SESSION['nis_guru'] = $data['nis_guru'];
+            $_SESSION['nama'] = isset($data['nama']) ? $data['nama'] : "Bapak/Ibu Guru"; 
+            header("location: homepage.php");
+        } else {
+            header("location: login.php?pesan=gagal");
+        }
+    }
 }
 ?>
 
@@ -23,8 +55,10 @@ if (isset($_SESSION['status_login']) && $_SESSION['status_login'] == "sudah_logi
     
     <!-- Trik maksa browser baca CSS baru -->
     <link rel="stylesheet" href="assets/css/style.css?v=<?php echo time(); ?>">
+    
 </head>
 <body>
+    
 
     <div class="mobile-container">
         
@@ -52,19 +86,58 @@ if (isset($_SESSION['status_login']) && $_SESSION['status_login'] == "sudah_logi
             ?>
 
             <!-- Action dikirim ke proses_login.php di dalam folder config -->
-            <form action="config/proses_login.php" method="POST" style="display: flex; flex-direction: column; gap: 20px;">
-                
-                <div class="input-group">
-                    <label for="nis">Nomor Induk Siswa</label>
-                    <input type="number" id="nis" name="nis" placeholder="Contoh: 1002938" required autocomplete="off">
-                </div>
+           <form action="config/proses_login.php" method="POST" style="display: flex; flex-direction: column; gap: 20px;">
 
-                <div class="input-group">
-                    <label for="password">Kata Sandi</label>
-                    <input type="password" id="password" name="password" placeholder="Masukkan kata sandi" required>
-                </div>
+    <input type="hidden" name="role" id="inputRole" value="siswa">
 
-                <button type="submit" class="btn-login">Masuk ke Sistem</button>
+    <div class="role-selector">
+        <div class="role-card active" id="cardSiswa" onclick="pilihRole('siswa')">
+            <span class="role-icon">🧑‍🎓</span>
+            <span class="role-text">Siswa</span>
+        </div>
+        <div class="role-card" id="cardGuru" onclick="pilihRole('guru')">
+            <span class="role-icon">👨‍🏫</span>
+            <span class="role-text">Guru</span>
+        </div>
+    </div>
+
+    <div class="input-group">
+        <label for="nis" id="labelNis">Nomor Induk Siswa</label>
+        <input type="number" id="nis" name="nis" placeholder="Contoh: 1002938" required autocomplete="off">
+    </div>
+
+    <div class="input-group">
+        <label for="password">Kata Sandi</label>
+        <input type="password" id="password" name="password" placeholder="Masukkan kata sandi" required>
+    </div>
+
+    <button type="submit" name="login" class="btn-login">Masuk ke Sistem</button>
+
+</form>
+
+<script>
+    function pilihRole(role) {
+        // Set value input hidden buat dikirim ke PHP
+        document.getElementById('inputRole').value = role;
+
+        // Bersihin class 'active' dari kedua kotak
+        document.getElementById('cardSiswa').classList.remove('active');
+        document.getElementById('cardGuru').classList.remove('active');
+
+        // Logika Morphing (Ubah Teks Sesuai ID yang bener)
+        if (role === 'siswa') {
+            document.getElementById('cardSiswa').classList.add('active');
+            // ID disamain sama HTML di atas
+            document.getElementById('labelNis').innerText = 'Nomor Induk Siswa';
+            document.getElementById('nis').placeholder = 'Contoh: 1002938';
+        } else {
+            document.getElementById('cardGuru').classList.add('active');
+            // ID disamain sama HTML di atas
+            document.getElementById('labelNis').innerText = 'Nomor Induk Guru';
+            document.getElementById('nis').placeholder = 'Masukkan Nomor Induk Guru';
+        }
+    }
+</script>
                 
             </form>
         </div>
