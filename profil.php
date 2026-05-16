@@ -245,38 +245,41 @@ $inisial = strtoupper(substr($nama_user, 0, 1));
             </div>
         </div>
 
-        <div>
-            <p class="menu-group-label">Keamanan Akun</p>
-            <div class="menu-container">
-                <a href="ubah_password.php" class="menu-item">
-                    <div class="menu-item-left">
-                        <div class="icon-wrap">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+       <div style="display: flex; flex-direction: column; gap: 20px; width: 100%; margin-bottom: 30px;">
+            
+            <div>
+                <p class="menu-group-label">Keamanan Akun</p>
+                <div class="menu-container">
+                    <a href="ubah_password.php" class="menu-item">
+                        <div class="menu-item-left">
+                            <div class="icon-wrap">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                            </div>
+                            <span>Ubah Password</span>
                         </div>
-                        <span>Ubah Password</span>
-                    </div>
-                    <svg class="chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
-                </a>
+                        <svg class="chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                    </a>
+                </div>
             </div>
-        </div>
 
-        <div>
-            <p class="menu-group-label">Informasi</p>
-            <div class="menu-container">
-                <a href="tentang.php" class="menu-item">
-                    <div class="menu-item-left">
-                        <div class="icon-wrap">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            <div>
+                <p class="menu-group-label">Informasi</p>
+                <div class="menu-container">
+                    <a href="tentang.php" class="menu-item">
+                        <div class="menu-item-left">
+                            <div class="icon-wrap">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+                            </div>
+                            <span>Tentang Aplikasi</span>
                         </div>
-                        <span>Tentang Aplikasi</span>
-                    </div>
-                    <svg class="chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
-                </a>
+                        <svg class="chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                    </a>
+                </div>
             </div>
+
         </div>
 
         <a href="logout.php" class="btn-logout-full">Keluar dari Akun</a>
-
     </div>
 
     <nav class="bottom-nav">
