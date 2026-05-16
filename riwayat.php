@@ -1,8 +1,7 @@
 <?php 
 session_start();
-include 'config/koneksi.php'; // Sesuaikan lokasi koneksi lu
+include 'config/koneksi.php'; 
 
-// Satpam Pengecek Login
 if (!isset($_SESSION['status_login']) || $_SESSION['status_login'] != "sudah_login") {
     header("location: login.php?pesan=belum_login");
     exit();
@@ -10,22 +9,44 @@ if (!isset($_SESSION['status_login']) || $_SESSION['status_login'] != "sudah_log
 
 $role = $_SESSION['role'];
 
-// LOGIKA BINGLON: Beda Role, Beda Query & Beda Judul
+// 1. NANGKEP PARAMETER FILTER DAN SEARCH (DARI URL)
+$filter = isset($_GET['filter']) ? $_GET['filter'] : 'semua';
+$search = isset($_GET['search']) ? mysqli_real_escape_string($koneksi, $_GET['search']) : '';
+
+// 2. KONDISI UNTUK QUERY SQL
+$kondisi = "";
+
 if ($role == 'siswa') {
     $nis_user = $_SESSION['nis'];
-    $query = mysqli_query($koneksi, "SELECT * FROM pengaduan WHERE nis='$nis_user' ORDER BY id DESC");
+    $kondisi = "WHERE nis='$nis_user'";
     
+    // Tambahan kondisi kalau siswa nge-klik filter status
+    if ($filter == 'proses') $kondisi .= " AND status='Proses'";
+    elseif ($filter == 'selesai') $kondisi .= " AND status='Selesai'";
+    
+    // Tambahan kondisi kalau siswa nyari kata kunci
+    if (!empty($search)) $kondisi .= " AND (isi LIKE '%$search%' OR kategori LIKE '%$search%')";
+
     $page_title = "Riwayat Pengaduan";
     $page_desc = "Daftar laporan yang pernah kamu kirimkan.";
     $nav_text = "Riwayat";
 } else {
-    // Guru ngeliat SEMUA laporan
-    $query = mysqli_query($koneksi, "SELECT * FROM pengaduan ORDER BY id DESC");
+    // Role GURU
+    $kondisi = "WHERE 1=1"; // Trik SQL biar bisa digabung pake AND terus
     
+    if ($filter == 'proses') $kondisi .= " AND status='Proses'";
+    elseif ($filter == 'selesai') $kondisi .= " AND status='Selesai'";
+    
+    // Guru bisa nyari berdasarkan teks laporan, kategori, atau NIS siswa
+    if (!empty($search)) $kondisi .= " AND (isi LIKE '%$search%' OR kategori LIKE '%$search%' OR nis LIKE '%$search%')";
+
     $page_title = "Kelola Aspirasi Masuk";
     $page_desc = "Daftar seluruh laporan dari siswa yang perlu ditinjau.";
     $nav_text = "Kelola";
 }
+
+// 3. JALANKAN QUERY DINAMIS
+$query = mysqli_query($koneksi, "SELECT * FROM pengaduan $kondisi ORDER BY id DESC");
 ?>
 
 <!DOCTYPE html>
@@ -91,6 +112,66 @@ if ($role == 'siswa') {
         }
         .btn-detail:hover { background-color: #E5E7EB; }
 
+        /* --- SEARCH BAR --- */
+        .search-container {
+            margin-bottom: 20px;
+            width: 100%;
+        }
+        .search-form {
+            display: flex;
+            gap: 10px;
+        }
+        .search-input {
+            flex: 1;
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: 1px solid #E5E7EB;
+            background-color: #FFFFFF;
+            font-size: 13px;
+            font-family: inherit;
+            outline: none;
+            transition: 0.2s;
+             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+        .search-input:focus {
+            border-color: #D32F2F;
+        }
+        .btn-search {
+            background-color: #D32F2F;
+            color: white;
+            border: none;
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        /* --- FILTER TABS --- */
+        .filter-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+        .tab-item {
+            padding: 8px 16px;
+            border-radius: 20px;
+            background-color: #E5E7EB;
+            color: #4B5563;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+        .tab-item.tab-active {
+            background-color:  #D32F2F;
+            color: #FFFFFF;
+        }
+
         /* Footer Kapsul */
         .bottom-nav {
             position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
@@ -112,6 +193,22 @@ if ($role == 'siswa') {
         <div class="page-header">
             <h1><?php echo $page_title; ?></h1>
             <p><?php echo $page_desc; ?></p>
+        </div>
+
+        <div class="search-container">
+            <form action="" method="GET" class="search-form">
+                <input type="hidden" name="role" value="<?php echo $role; ?>">
+                <input type="hidden" name="filter" value="<?php echo $filter; ?>">
+                
+                <input type="text" name="search" class="search-input" placeholder="<?php echo ($role == 'siswa') ? 'Cari laporanku...' : 'Cari isi, kategori, atau NIS...'; ?>" value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>">
+                <button type="submit" class="btn-search">Cari</button>
+            </form>
+        </div>
+
+        <div class="filter-tabs">
+            <a href="riwayat.php?filter=semua" class="tab-item <?php echo ($filter == 'semua') ? 'tab-active' : ''; ?>">Semua</a>
+            <a href="riwayat.php?filter=proses" class="tab-item <?php echo ($filter == 'proses') ? 'tab-active' : ''; ?>">Belum Diproses</a>
+            <a href="riwayat.php?filter=selesai" class="tab-item <?php echo ($filter == 'selesai') ? 'tab-active' : ''; ?>">Selesai</a>
         </div>
 
         <?php 
