@@ -42,7 +42,7 @@ if ($_SESSION['status_login'] != "sudah_login") {
         /* 2. Layout Tanpa "Penjara" (Lebar menyesuaikan, tanpa background putih) */
         .app-layout {
             width: 100%;
-            max-width: 500px; /* Sedikit dilebarin biar lega kalau di laptop */
+            max-width: 420px; /* Sedikit dilebarin biar lega kalau di laptop */
             margin: 0 auto;
             padding: 20px 24px 60px 24px; /* Padding luar */
             display: flex;

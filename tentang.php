@@ -18,6 +18,10 @@ if ($_SESSION['status_login'] != "sudah_login") {
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+        }
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
             margin: 0;
@@ -27,13 +31,13 @@ if ($_SESSION['status_login'] != "sudah_login") {
         }
 
         .app-layout {
-            width: 100%;
+           width: 100%;
             max-width: 500px;
             margin: 0 auto;
-            padding: 20px 24px;
+            padding: 15px 20px; /* Asalnya 20px 24px */
             display: flex;
             flex-direction: column;
-            gap: 24px;
+            gap: 20px;
         }
 
         /* Top Nav Bar mirip form laporan */
@@ -68,9 +72,9 @@ if ($_SESSION['status_login'] != "sudah_login") {
 
         /* Card Utama */
         .info-card {
-            background-color: #FFFFFF;
+          background-color: #FFFFFF;
             border-radius: 24px;
-            padding: 40px 24px;
+            padding: 30px 20px; /* Asalnya 40px 24px */
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
             text-align: center;
             display: flex;

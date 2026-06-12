@@ -64,7 +64,9 @@ if (isset($_POST['login'])) {
         
         <div class="login-header">
             <!-- Bisa diganti pakai logo sekolah beneran nanti pakai tag <img> -->
-            <div style="font-size: 32px; margin-bottom: 15px;">🏫</div>
+           <div style="margin-bottom: 5px;">
+            <img src="assets/css/img/logo-telkom-schools.png" alt="Telkom Schools" style="height: 40px; width: auto; object-fit: contain;">
+            </div>
             <h1>Masuk Akun</h1>
             <p>Silakan masuk dengan NIS Anda untuk mulai menyampaikan aspirasi.</p>
         </div>
@@ -106,11 +108,19 @@ if (isset($_POST['login'])) {
         <input type="number" id="nis" name="nis" placeholder="Contoh: 1002938" required autocomplete="off">
     </div>
 
-    <div class="input-group">
-        <label for="password">Kata Sandi</label>
-        <input type="password" id="password" name="password" placeholder="Masukkan kata sandi" required>
+<div class="input-group"> <label style="display: block; font-weight: bold; margin-bottom: 8px;">Kata Sandi</label>
+    
+    <div style="position: relative;">
+        <input type="password" id="password_input" name="password" placeholder="Masukkan Kata Sandi" style="width: 100%; padding: 14px 45px 14px 16px; border-radius: 12px; border: 1px solid #E5E7EB; background: #F9FAFB; font-size: 14px; box-sizing: border-box;" required>
+        
+        <span id="toggle_password" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #9CA3AF; display: flex; align-items: center;">
+            <svg id="eye_icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+        </span>
     </div>
-
+</div>
     <button type="submit" name="login" class="btn-login">Masuk ke Sistem</button>
 
 </form>
@@ -143,6 +153,27 @@ if (isset($_POST['login'])) {
         </div>
 
     </div>
+    <script>
+    const togglePassword = document.getElementById('toggle_password');
+    const passwordInput = document.getElementById('password_input');
+    const eyeIcon = document.getElementById('eye_icon');
 
+    togglePassword.addEventListener('click', function () {
+        // Cek tipe input saat ini (password atau text)
+        const isPassword = passwordInput.getAttribute('type') === 'password';
+        
+        // Ubah tipe inputnya
+        passwordInput.setAttribute('type', isPassword ? 'text' : 'password');
+        
+        // Ubah gambar ikon matanya (terbuka vs dicoret)
+        if (isPassword) {
+            // SVG Mata Dicoret (Sembunyikan)
+            eyeIcon.innerHTML = '<path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" y1="2" x2="22" y2="22"/>';
+        } else {
+            // SVG Mata Terbuka (Lihat)
+            eyeIcon.innerHTML = '<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path><circle cx="12" cy="12" r="3"></circle>';
+        }
+    });
+</script>
 </body>
 </html>

@@ -28,11 +28,13 @@
 
 body {
     /* Background modern dengan efek 'Ambient Glow' yang soft */
-    background-color: var(--abu-bg);
-    background-image: 
-        radial-gradient(circle at top right, #ffe1e1, transparent 50%),
-        radial-gradient(circle at bottom left, #e0e5ec, transparent 50%);
-    color: var(--abu-teks);
+             background: 
+                /* Layer 1: Pendaran (radiate) merah super halus dari pojok kanan atas */
+                radial-gradient(circle at top right, #FFDADA 0%, transparent 55%),
+                /* Layer 2: Warna dasar putih tulang ke abu-abu aplikasi */
+                linear-gradient(135deg, #FDFBFB 0%, #F4F6F9 100%) !important; 
+            
+            padding-top: 0;
     
     /* Flexbox untuk bikin posisinya bener-bener di tengah (Tengah Kanan-Kiri, Tengah Atas-Bawah) */
     display: flex;
@@ -47,7 +49,7 @@ body {
     max-width: 420px;
     background-color: var(--putih, #FFFFFF); /* Pake putih biar kontras sama gradien body lu */
     border-radius: 24px; /* Ini yang bikin semua ujungnya melengkung mulus */
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08); /* Bayangan halus biar melayang */
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2); /* Bayangan halus biar melayang */
     position: relative;
     padding: 40px 20px;
     overflow: hidden;
@@ -131,4 +133,35 @@ body {
     font-size: 13px;
     font-weight: 600;
     border: 1px solid #FEE2E2;
+}
+/* --- ROLE SELECTOR --- */
+.role-selector {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 5px;
+}
+.role-card {
+    flex: 1;
+    padding: 12px;
+    border: 1.5px solid var(--abu-border, #E5E7EB);
+    border-radius: 14px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background-color: var(--putih, #FFFFFF);
+    color: #6B7280;
+}
+.role-icon {
+    font-size: 24px;
+    display: block;
+    margin-bottom: 4px;
+}
+.role-text {
+    font-size: 13px;
+    font-weight: 600;
+}
+.role-card.active {
+    border-color: var(--merah-utama, #D32F2F);
+    background-color: #FEF2F2;
+    color: var(--merah-utama, #D32F2F);
 }

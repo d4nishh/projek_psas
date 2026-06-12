@@ -20,6 +20,29 @@ $total_laporan = mysqli_num_rows($query_total);
 $query_proses = mysqli_query($koneksi, "SELECT * FROM pengaduan WHERE nis='$nis_user' AND status='proses'");
 $total_proses = mysqli_num_rows($query_proses);
 
+// Ambil role dari session
+$role = $_SESSION['role'];
+
+// Siapin variabel buat nampung angka
+$total_laporan = 0;
+$total_proses = 0;
+
+if ($role == 'siswa') {
+    $nis_user = $_SESSION['nis'];
+    // Hitung punya siswa ini aja
+    $query_total = mysqli_query($koneksi, "SELECT COUNT(*) as total FROM pengaduan WHERE nis='$nis_user'");
+    $query_proses = mysqli_query($koneksi, "SELECT COUNT(*) as proses FROM pengaduan WHERE nis='$nis_user' AND status='Proses'");
+} else {
+    // Hitung SEMUA laporan buat guru
+    $query_total = mysqli_query($koneksi, "SELECT COUNT(*) as total FROM pengaduan");
+    $query_proses = mysqli_query($koneksi, "SELECT COUNT(*) as proses FROM pengaduan WHERE status='Proses'");
+}
+
+// Ekstrak angkanya
+$data_total = mysqli_fetch_assoc($query_total);
+$data_proses = mysqli_fetch_assoc($query_proses);
+$total_laporan = $data_total['total'];
+$total_proses = $data_proses['proses'];
 ?>
 
 <!DOCTYPE html>
@@ -41,7 +64,12 @@ $total_proses = mysqli_num_rows($query_proses);
         /* Override body dari style.css biar posisinya nempel di atas */
         body {
             align-items: flex-start !important; 
-            background-color: #F8F9FA !important; /* Warna dasar layar aplikasi */
+             background: 
+                /* Layer 1: Pendaran (radiate) merah super halus dari pojok kanan atas */
+                radial-gradient(circle at top right, #FFDADA 0%, transparent 55%),
+                /* Layer 2: Warna dasar putih tulang ke abu-abu aplikasi */
+                linear-gradient(135deg, #FDFBFB 0%, #F4F6F9 100%) !important; 
+            
             padding-top: 0;
         }
 
@@ -84,7 +112,7 @@ $total_proses = mysqli_num_rows($query_proses);
             background-color: #FFFFFF;
             border-radius: 20px;
             padding: 24px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
             border: 1px solid #F3F4F6;
         }
         .card-stats-title {
@@ -133,7 +161,7 @@ $total_proses = mysqli_num_rows($query_proses);
             border-radius: 20px;
             padding: 24px 10px;
             text-align: center;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
             text-decoration: none;
             border: 1px solid #F3F4F6;
             transition: 0.2s ease;
@@ -209,7 +237,7 @@ $total_proses = mysqli_num_rows($query_proses);
             border-radius: 30px; 
             
             border: 1px solid #F3F4F6;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08); /* Shadow dibikin lebih halus */
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1); /* Shadow dibikin lebih halus */
             z-index: 100;
         }
         .nav-item {
@@ -239,56 +267,86 @@ $total_proses = mysqli_num_rows($query_proses);
     <!-- Pakai class app-layout, BUKAN mobile-container -->
     <div class="app-layout">
         
-        <!-- 1. HEADER SECTON -->
-        <div class="header-app">
-            <div>
-                <p class="greeting-small">Selamat Datang,</p>
-                <!-- Menampilkan nama siswa dari session -->
-                <h1 class="user-name"><?php echo $_SESSION['nama']; ?> 👋</h1>
+       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+            
+            <div style="flex: 1; padding-right: 15px;">
+                <p style="font-size: 12px; color: #9CA3AF; margin-bottom: 4px;">Selamat Datang,</p>
+                <h1 style="font-size: 18px; font-weight: 800; color: #D32F2F; margin: 0; line-height: 1.3;">
+                    <?php echo $_SESSION['nama']; ?> 👋
+                </h1>
             </div>
-            <div class="bell-icon">🔔</div>
+            
+            <div style="width: 45px; height: 45px; flex-shrink: 0; background-color: #FFFFFF; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); display: flex; justify-content: center; align-items: center; padding: 5px;">
+                <img src="assets/css/img/logo_ts.png" alt="Logo TS" style="width: 100%; height: 100%; object-fit: contain;">
+            </div>
+
         </div>
 
-        <!-- 2. CARD STATISTIK -->
-        <div class="card-stats">
-            <h2 class="card-stats-title">Ringkasan Laporanmu</h2>
-            <div class="stats-row">
-                <div class="stat-item">
-                    <div class="stat-angka"><?php echo $total_laporan; ?></div>
-                    <div class="stat-label">Total Laporan</div>
+       <div class="card-stats">
+            <?php if ($role == 'siswa') { ?>
+                <h2 class="card-stats-title">Ringkasan Laporanmu</h2>
+                <div class="stats-row">
+                    <div class="stat-item">
+                        <div class="stat-angka"><?php echo $total_laporan; ?></div>
+                        <div class="stat-label">Total Laporan</div>
+                    </div>
+                    <div class="stat-item" style="background-color: #FFFBEB; border-color: #FEF3C7;">
+                        <div class="stat-angka" style="color: #D97706;"><?php echo $total_proses; ?></div>
+                        <div class="stat-label" style="color: #B45309;">Sedang Diproses</div>
+                    </div>
                 </div>
-                <!-- Card Diproses dengan warna aksen kuning -->
-                <div class="stat-item" style="background-color: #FFFBEB; border-color: #FEF3C7;">
-                    <div class="stat-angka" style="color: #D97706;"><?php echo $total_proses; ?></div>
-                    <div class="stat-label" style="color: #B45309;">Sedang Diproses</div>
+            <?php } else { ?>
+                <h2 class="card-stats-title">Statistik Aspirasi Masuk</h2>
+                <div class="stats-row">
+                    <div class="stat-item">
+                        <div class="stat-angka"><?php echo $total_laporan; ?></div>
+                        <div class="stat-label">Total Aspirasi</div>
+                    </div>
+                    <div class="stat-item" style="background-color: #FEF2F2; border-color: #FEE2E2;">
+                        <div class="stat-angka" style="color: #DC2626;"><?php echo $total_proses; ?></div>
+                        <div class="stat-label" style="color: #991B1B;">Perlu Tindakan</div>
+                    </div>
                 </div>
-            </div>
+            <?php } ?>
         </div>
 
-        <!-- 3. MENU UTAMA (GRID KOTAK) -->
         <div>
             <h2 class="menu-section-title">Eksplor <span style="border-bottom: 2px solid #D32F2F;">Sekarang!</span></h2>
             <div class="menu-grid">
-                <a href="form.php" class="menu-box">
-                    <div class="menu-icon">📝</div>
-                    <div class="menu-text">Buat Laporan</div>
-                </a>
-                
-                <a href="riwayat.php" class="menu-box">
-                    <div class="menu-icon">🕒</div>
-                    <div class="menu-text">Cek Riwayat</div>
-                </a>
-            </div>
-        </div>
-        <!-- 4. BANNER EDUKASI / INFORMASI -->
-        <div class="info-banner">
-            <div class="banner-icon">💡</div>
-            <div class="banner-text">
-                <h3>Sampaikan dengan Baik</h3>
-                <p>Gunakan bahasa yang sopan dan jelas saat menulis laporan agar mudah ditindaklanjuti.</p>
+                <?php if ($role == 'siswa') { ?>
+                    <a href="form.php" class="menu-box">
+                        <div class="menu-icon">📝</div>
+                        <div class="menu-text">Buat Laporan</div>
+                    </a>
+                    <a href="riwayat.php" class="menu-box">
+                        <div class="menu-icon">🕒</div>
+                        <div class="menu-text">Cek Riwayat</div>
+                    </a>
+                <?php } else { ?>
+                    <a href="riwayat.php" class="menu-box">
+                        <div class="menu-icon">🔍</div>
+                        <div class="menu-text">Tinjau Laporan</div>
+                    </a>
+                    <a href="riwayat.php?filter=selesai" class="menu-box">
+                        <div class="menu-icon">✅</div>
+                        <div class="menu-text">Arsip Selesai</div>
+                    </a>
+                <?php } ?>
             </div>
         </div>
 
+        <div class="info-banner">
+            <div class="banner-icon">💡</div>
+            <div class="banner-text">
+                <?php if ($role == 'siswa') { ?>
+                    <h3>Sampaikan dengan Baik</h3>
+                    <p>Gunakan bahasa yang sopan dan jelas saat menulis laporan agar mudah ditindaklanjuti.</p>
+                <?php } else { ?>
+                    <h3>Tindak Lanjut Cepat</h3>
+                    <p>Segera tinjau dan verifikasi aspirasi siswa untuk menciptakan lingkungan sekolah yang lebih baik.</p>
+                <?php } ?>
+            </div>
+        </div>
     </div> <!-- Ini adalah penutup div class="app-layout" yang sudah ada sebelumnya -->
 
     <!-- ==============================================
@@ -310,7 +368,7 @@ $total_proses = mysqli_num_rows($query_proses);
                 <!-- SVG Icon Clock/Riwayat -->
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
             </div>
-            <span class="nav-text">Riwayat</span>
+         <span class="nav-text"><?php echo ($role == 'siswa') ? 'Riwayat' : 'Kelola'; ?></span>
         </a>
 
         <!-- Menu Profil (Abu-abu) -->

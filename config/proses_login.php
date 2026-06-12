@@ -1,42 +1,49 @@
 <?php
-// 1. Wajib panggil session untuk menyalakan fitur "satpam" (harus paling atas)
 session_start();
 
-// 2. Hubungkan ke database 
-// (Karena koneksi.php ada di folder yang sama, cukup panggil nama filenya)
-include 'koneksi.php';
+// Panggil file koneksi (karena proses_login.php dan koneksi.php sama-sama di dalam folder config, gausah pake folder lagi)
+include 'koneksi.php'; 
 
-// 3. Tangkap data dari form login.php
-// Pastikan namanya sesuai dengan atribut name="..." di input HTML kamu
-$nis = $_POST['nis'];
+// Nangkep data dari form login.php
+$role = $_POST['role'];
+$nis_input = $_POST['nis']; // Nangkep dari name="nis"
 $password = $_POST['password'];
 
-// 4. Cek kecocokan data ke database
-// (Kita asumsikan nama tabelmu 'siswa' dan variabel koneksimu '$koneksi' atau '$conn')
-// Ganti $koneksi menjadi $conn jika di file koneksi.php kamu pakai $conn
-$query = mysqli_query($koneksi, "SELECT * FROM siswa WHERE nis='$nis' AND password='$password'");
-
-// 5. Hitung apakah ada data yang cocok
-$cek = mysqli_num_rows($query);
-
-if ($cek > 0) {
-    // Kalau NIS dan Password BENAR
-    $data = mysqli_fetch_assoc($query);
+if ($role == 'siswa') {
     
-    // Berikan "gelang" session agar sistem ingat siapa yang login
-    $_SESSION['status_login'] = "sudah_login";
-    $_SESSION['nis'] = $data['nis']; 
-    $_SESSION['nama'] = $data['nama'];
+    // Logika Siswa
+    $query = mysqli_query($koneksi, "SELECT * FROM siswa WHERE nis='$nis_input' AND password='$password'");
     
-    // Arahkan ke homepage 
-    // (Pakai ../ karena kita sedang di dalam folder config, jadi harus mundur 1 langkah)
-    header("location: ../homepage.php");
-    exit();
+    if (mysqli_num_rows($query) > 0) {
+        $data = mysqli_fetch_array($query);
+        $_SESSION['status_login'] = "sudah_login";
+        $_SESSION['role'] = "siswa";
+        $_SESSION['nis'] = $data['nis'];
+        $_SESSION['nama'] = $data['nama'];
+        
+        // Sukses? Keluar dari folder config (../), lempar ke homepage.php
+        header("location: ../homepage.php");
+    } else {
+        // Gagal? Keluar dari folder config (../), balik ke login.php bawa pesan
+        header("location: ../login.php?pesan=gagal");
+    }
 
-} else {
-    // Kalau NIS atau Password SALAH
-    // Tendang balik ke halaman login dan kirim pesan error 'gagal'
-    header("location: ../login.php?pesan=gagal");
-    exit();
+} else if ($role == 'guru') {
+    
+    // Logika Guru (Admin)
+    $query = mysqli_query($koneksi, "SELECT * FROM admin WHERE nis_guru='$nis_input' AND password='$password'");
+    
+    if (mysqli_num_rows($query) > 0) {
+        $data = mysqli_fetch_array($query);
+        $_SESSION['status_login'] = "sudah_login";
+        $_SESSION['role'] = "guru";
+        $_SESSION['nis_guru'] = $data['nis_guru'];
+        $_SESSION['nama'] = $data['nama'];
+        
+        // Sukses? Keluar dari folder config (../), lempar ke homepage.php
+        header("location: ../homepage.php");
+    } else {
+        header("location: ../login.php?pesan=gagal");
+    }
 }
 ?>
